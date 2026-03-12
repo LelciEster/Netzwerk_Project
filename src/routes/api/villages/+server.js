@@ -17,3 +17,15 @@ export async function GET() {
     return Response.json(rows, { status: 200 });
 }
 
+export async function POST({request}) {
+    if (!checkAuth(request))  {
+        return Response.json({ message:'Unauthorized'}, { status: 401 });
+        }
+       const { name, location, type, population, area_km2, elevation_m, municipality, description } = await request.json(); if (!name || !location || !type) { return Response.json({ message: 'Missing required fields: name, location, type' }, { status: 400 }); }
+    
+}
+
+const [result] = await pool.query( 'INSERT INTO villages (name, location, type, population, area_km2, elevation_m, municipality, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [name, location, type, population ?? null, area_km2 ?? null, elevation_m ?? null, municipality ?? null, description ?? null]
+
+ ); 
+ return Response.json({  message: 'Village created', id: result.insertId }, { status: 201 });
