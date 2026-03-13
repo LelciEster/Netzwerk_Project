@@ -42,3 +42,19 @@ export async function PUT({ params, request }) {
 
     return Response.json({ message: 'Village updated' }, { status: 200 });
 }
+
+export async function DELETE({ params, request }) {
+    if (!checkAuth(request)) {
+        return Response.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const [existing] = await pool.query('SELECT * FROM villages WHERE id = ?', [params.id]);
+    if (existing.length === 0) {
+        return Response.json({ message: 'Village not found' }, { status: 404 });
+    }
+
+    await pool.query('DELETE FROM villages WHERE id = ?', [params.id]);
+
+    // 204 No Content - successful deletion, no response body needed
+    return new Response(null, { status: 204 });
+}
