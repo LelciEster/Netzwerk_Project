@@ -1,6 +1,8 @@
 import pool from '$lib/server/database.js';
 import { API_USER, API_PASS } from '$env/static/private';
 
+// Checks if the request has valid Basic Auth credentials
+// Decodes the Base64 header and compares with env variables
 
 function checkAuth(request) {
     const auth = request.headers.get('Authorization');
@@ -9,6 +11,8 @@ function checkAuth(request) {
     const [user, pass] = decoded.split(':');
     return user === API_USER && pass === API_PASS;
 }
+// GET /api/villages/:id - public, no auth needed
+// Returns 404 if the village does not exist
 
 export async function GET({ params }) {
     const [rows] = await pool.query('SELECT * FROM villages WHERE id = ?', [params.id]);
