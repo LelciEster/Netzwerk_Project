@@ -13,7 +13,6 @@ function checkAuth(request) {
 }
 // GET /api/villages/:id - public, no auth needed
 // Returns 404 if the village does not exist
-
 export async function GET({ params }) {
     const [rows] = await pool.query('SELECT * FROM villages WHERE id = ?', [params.id]);
 
@@ -23,18 +22,19 @@ export async function GET({ params }) {
 
     return Response.json(rows[0], { status: 200 });
 }
+// UPDATE village by ID - auth required
 export async function PUT({ params, request }) {
     if (!checkAuth(request)) {
         return Response.json({ message: 'Unauthorized' }, { status: 401 });
     }
-
+// Check if village exists
     const [existing] = await pool.query('SELECT * FROM villages WHERE id = ?', [params.id]);
     if (existing.length === 0) {
         return Response.json({ message: 'Village not found' }, { status: 404 });
     }
 
     const { name, location, type, population, area_km2, elevation_m, municipality, description } = await request.json();
-
+// name, location, type are required
     if (!name || !location || !type) {
         return Response.json({ message: 'Missing required fields: name, location, type' }, { status: 400 });
     }
